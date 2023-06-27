@@ -1,6 +1,5 @@
 #%%
 import functions_and_classes as functions
-import datasets.py as datasets
 import numpy as np
 import torch
 import torch.nn as nn
@@ -60,7 +59,7 @@ plot_rate=0 #epochs/5
 
 
 # Instantiate synthetic dataset
-dataset = datasets.SyntheticKHot(f,k)
+dataset = functions.SyntheticKHot(f,k)
 batch_size = len(dataset) #Full batch gradient descent
 loader = functions.DataLoader(dataset, batch_size=batch_size, shuffle = True, num_workers=0)
 
@@ -93,3 +92,5 @@ scheduler = functions.CustomScheduler(optimizer, warmup_steps, max_lr, decay_fac
 losses, weights_history, model_history = functions.train(model, loader, criterion, optimizer, epochs, logging_loss, plot_rate, store_rate, scheduler, lr_print_rate)
 # %%
 functions.plot_weights_interactive(weights_history, store_rate=store_rate)
+
+# %%
