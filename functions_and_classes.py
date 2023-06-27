@@ -1,3 +1,4 @@
+#%%
 import numpy as np
 import torch
 import torch.nn as nn
@@ -31,18 +32,20 @@ mpl.rcParams['axes.labelsize'] = fontsize
 
 #%%
 # This class creates a synthetic dataset where each sample is a vector of zeros except 
-# for a random index which is assigned a random value between 0 and 1.
-class SyntheticDataset(Dataset):
-    def __init__(self, num_samples, f):
+# for a set of k random indices which are assigned random values between 0 and 1.
+class SyntheticKHot(Dataset):
+    def __init__(self, num_samples, f, k):
         """
         Initialize the SyntheticDataset object.
         
         Args:
             num_samples: The number of samples to generate.
             f: The length of the feature vector.
+            k: The number of "hot" indices in each sample.
         """
         self.num_samples = num_samples  # The number of samples in the dataset
         self.f = f  # The size of the feature vector for each sample
+        self.k = k
         self.data = self.generate_data()  # Generate the synthetic data
         
     def generate_data(self):
@@ -55,19 +58,58 @@ class SyntheticDataset(Dataset):
         """
         data = torch.zeros((self.num_samples, self.f))  # Initialize the data tensor with zeros
         for i in range(self.num_samples):  # For each sample
-            index = torch.randint(0, self.f, (1,))  # Pick a random index
-            data[i, index] = torch.rand(1)  # Assign a random value between 0 and 1 at the chosen index
+            indices = random.sample(range(self.f), self.k)
+            for index in indices:
+                data[i, index] = torch.rand(1)  # Assign a random value between 0 and 1 at the chosen index
         return data
-
     def __len__(self):
         return self.num_samples
 
     def __getitem__(self, idx):
         return self.data[idx]
 
+#%%
+# This class creates a synthetic dataset where each sample is a vector of zeros except 
+# for a set of k random indices which are assigned random values between 0 and 1.
+class SyntheticKHot(Dataset):
+    def __init__(self, num_samples, f, k):
+        """
+        Initialize the SyntheticDataset object.
+        
+        Args:
+            num_samples: The number of samples to generate.
+            f: The length of the feature vector.
+            k: The number of "hot" indices in each sample.
+        """
+        self.num_samples = num_samples  # The number of samples in the dataset
+        self.f = f  # The size of the feature vector for each sample
+        self.k = k
+        self.data = self.generate_data()  # Generate the synthetic data
+        
+    def generate_data(self):
+        """
+        Generate the synthetic data.
+        
+        Returns:
+            A tensor of size (num_samples x f) with each row containing one random number 
+            between 0 and 1 at a random index and the rest are all zeros.
+        """
+        data = torch.zeros((self.num_samples, self.f))  # Initialize the data tensor with zeros
+        for i in range(self.num_samples):  # For each sample
+            indices = random.sample(range(self.f), self.k)
+            for index in indices:
+                data[i, index] = torch.rand(1)  # Assign a random value between 0 and 1 at the chosen index
+        return data
+    def __len__(self):
+        return self.num_samples
+
+    def __getitem__(self, idx):
+        return self.data[idx]
+
+
 # This class creates a synthetic dataset where each sample is a vector with k indices set to 1 
 # (i.e., "hot") and the rest set to 0. All possible combinations of f choose k are included in the dataset.
-class SyntheticKHot(Dataset):
+class SyntheticKHotNormalised(Dataset):
     def __init__(self, f, k):
         """
         Initialize the SyntheticKHot object.
