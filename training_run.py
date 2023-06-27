@@ -1,5 +1,6 @@
 #%%
 import functions_and_classes as functions
+import datasets.py as datasets
 import numpy as np
 import torch
 import torch.nn as nn
@@ -12,12 +13,8 @@ import plotly.graph_objs as go
 import matplotlib as mpl
 import torch.nn.functional as F
 import random
-import plotly.graph_objects as go
 import copy
 from itertools import combinations
-from torch.optim.lr_scheduler import _LRScheduler
-from fancy_einsum import einsum
-from scipy.spatial import ConvexHull
 import os
 
 #%%
@@ -63,7 +60,7 @@ plot_rate=0 #epochs/5
 
 
 # Instantiate synthetic dataset
-dataset = functions.SyntheticKHot(f,k)
+dataset = datasets.SyntheticKHot(f,k)
 batch_size = len(dataset) #Full batch gradient descent
 loader = functions.DataLoader(dataset, batch_size=batch_size, shuffle = True, num_workers=0)
 
