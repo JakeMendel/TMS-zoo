@@ -18,6 +18,8 @@ from torch.optim.lr_scheduler import _LRScheduler
 from fancy_einsum import einsum
 from scipy.spatial import ConvexHull
 import os
+
+device = t.device("cuda" if t.cuda.is_available() else "cpu")
 #%%
 # This class creates a synthetic dataset where each sample is a vector which has indices which are zero with probability s and uniform between 0 and 1 otherwise
 class SyntheticSparse(Dataset):

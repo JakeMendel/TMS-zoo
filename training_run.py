@@ -1,5 +1,5 @@
 #%%
-import functions_and_classes as functions
+import net.py as net
 import datasets.py as datasets
 import numpy as np
 import torch
@@ -17,10 +17,13 @@ import copy
 from itertools import combinations
 import os
 
+device = t.device("cuda" if t.cuda.is_available() else "cpu")
+
+
 #%%
 # your chosen seed
 chosen_seed = 12
-functions.set_seed(chosen_seed)
+net.set_seed(chosen_seed)
 
 #Checking for errors
 lr_print_rate = 0
@@ -62,7 +65,7 @@ plot_rate=0 #epochs/5
 # Instantiate synthetic dataset
 dataset = datasets.SyntheticKHot(f,k)
 batch_size = len(dataset) #Full batch gradient descent
-loader = functions.DataLoader(dataset, batch_size=batch_size, shuffle = True, num_workers=0)
+loader = net.DataLoader(dataset, batch_size=batch_size, shuffle = True, num_workers=0)
 
 #Define the Loss function
 criterion = nn.MSELoss() if MSE else nn.CrossEntropyLoss() 
@@ -70,7 +73,7 @@ criterion = nn.MSELoss() if MSE else nn.CrossEntropyLoss()
 # Instantiate the model
 # initial_embed = torch.tensor(np.array([1/(1-np.cos(2*np.pi/f))**0.5*np.array([np.cos(2*np.pi*i/f),np.sin(2*np.pi*i/f)]) for i in range(f)]),dtype=torch.float32).T * 0.5
 # initial_bias = -torch.ones(f)*(1/(1-np.cos(2*np.pi/f))- 1)*0.25
-model = functions.Net(f, n,
+model = net.Net(f, n,
             tied = tied,
             final_bias = final_bias,
             hidden_bias = hidden_bias,
@@ -86,10 +89,10 @@ model = functions.Net(f, n,
 optimizer = torch.optim.SGD(model.parameters(), lr=initial_lr)
 
 #Define a learning rate schedule
-scheduler = functions.CustomScheduler(optimizer, warmup_steps, max_lr, decay_factor)
+scheduler = net.CustomScheduler(optimizer, warmup_steps, max_lr, decay_factor)
 
 
 # Train the model
-losses, weights_history, model_history = functions.train(model, loader, criterion, optimizer, epochs, logging_loss, plot_rate, store_rate, scheduler, lr_print_rate)
+losses, weights_history, model_history = net.train(model, loader, criterion, optimizer, epochs, logging_loss, plot_rate, store_rate, scheduler, lr_print_rate)
 # %%
-functions.plot_weights_interactive(weights_history, store_rate=store_rate)
+net.plot_weights_interactive(weights_history, store_rate=store_rate)
